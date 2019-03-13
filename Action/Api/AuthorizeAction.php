@@ -64,7 +64,7 @@ class AuthorizeAction extends BaseApiAwareAction implements GatewayAwareInterfac
             return;
         }
 
-        throw new LogicException('Unknown status: '.$response->getStatus());
+        throw new LogicException('Unknown status: '.$response->getStatus() . ' ' . $response->getErrorMessage());
     }
 
     /**
