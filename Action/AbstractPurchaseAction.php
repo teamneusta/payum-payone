@@ -56,12 +56,17 @@ abstract class AbstractPurchaseAction implements ActionInterface, GenericTokenFa
             return;
         }
 
-        $model['completed_status'] = $this->getCompletedStatus();
+        $afterUrl = $request->getToken()->getAfterUrl();
+        if(strpos($afterUrl,'?')>0){
+            $seperatorChar = '&';
+        } else {
+            $seperatorChar = '?';
+        }
 
         $model['redirect'] = [
-            'success' => $request->getToken()->getAfterUrl(),
-            'error' => $request->getToken()->getAfterUrl().'?canceled=1',
-            'back' => $request->getToken()->getAfterUrl().'?canceled=1',
+            'success' => $afterUrl,
+            'error' => $afterUrl . $seperatorChar .'canceled=1',
+            'back' => $afterUrl . $seperatorChar .'canceled=1',
         ];
 
         $this->gateway->execute($httpRequest = new GetHttpRequest());
