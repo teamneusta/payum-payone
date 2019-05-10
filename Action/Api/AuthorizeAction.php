@@ -12,6 +12,7 @@
 
 namespace CoreShop\Payum\Payone\Action\Api;
 
+use ArvPayoneApi\Request\PaymentTypes;
 use ArvPayoneApi\Response\GenericResponse;
 use ArvPayoneApi\Response\Status;
 use CoreShop\Payum\Payone\Request\Api\Authorize;
@@ -39,6 +40,14 @@ class AuthorizeAction extends BaseApiAwareAction implements GatewayAwareInterfac
 
         if ($this->api->isOnsite()) {
             $this->gateway->execute(new OnSitePayment($this->api->getPaymentType(), $model));
+        }
+
+        $paymentType = $this->api->getPaymentType();
+
+        if ($paymentType === PaymentTypes::PAYONE_SOFORT) {
+            $model['successurl'] = $model['redirect']['success'];
+            $model['errorurl'] = $model['redirect']['error'];
+            $model['backurl'] = $model['redirect']['back'];
         }
 
         $response = $this->api->authorize($model->toUnsafeArray());
