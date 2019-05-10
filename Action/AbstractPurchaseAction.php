@@ -17,6 +17,7 @@ use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\GatewayAwareInterface;
 use Payum\Core\GatewayAwareTrait;
+use Payum\Core\Reply\HttpRedirect;
 use Payum\Core\Request\Authorize;
 use Payum\Core\Request\Capture;
 use Payum\Core\Request\Generic;
@@ -56,16 +57,25 @@ abstract class AbstractPurchaseAction implements ActionInterface, GenericTokenFa
             return;
         }
 
+        if ($model['param']) {
+            sleep(5);
+
+            throw new HttpRedirect($request->getToken()->getAfterUrl());
+        }
+
+        $model['completed_status'] = $this->getCompletedStatus();
+
+        // there might be a more beautiful way
         $afterUrl = $request->getToken()->getAfterUrl();
-        if(strpos($afterUrl,'?')>0){
+        if(strpos($afterUrl,'?=')>0){
             $seperatorChar = '&';
         } else {
             $seperatorChar = '?';
         }
 
         $model['redirect'] = [
-            'success' => $afterUrl,
-            'error' => $afterUrl . $seperatorChar .'canceled=1',
+            'success' => $request->getToken()->getTargetUrl(),
+            'error' => $afterUrl. $seperatorChar .'canceled=1',
             'back' => $afterUrl . $seperatorChar .'canceled=1',
         ];
 
