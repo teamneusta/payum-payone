@@ -67,7 +67,7 @@ abstract class AbstractPurchaseAction implements ActionInterface, GenericTokenFa
 
         // there might be a more beautiful way
         $afterUrl = $request->getToken()->getAfterUrl();
-        if(strpos($afterUrl,'?=')>0){
+        if(strpos($afterUrl,'?')>0){
             $seperatorChar = '&';
         } else {
             $seperatorChar = '?';
