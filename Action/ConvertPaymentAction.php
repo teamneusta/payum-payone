@@ -34,8 +34,13 @@ class ConvertPaymentAction implements ActionInterface
 
         $details = ArrayObject::ensureArrayObject($payment->getDetails());
 
-        $details['reference'] = uniqid();
-        $details['order'] = ['orderId' => $details['reference']];
+        $reference = $payment->getNumber();
+        $reference = str_replace('ORD-', '', $reference);
+        $reference = str_replace(['-'], ['_'], $reference);
+        $reference = substr($reference, 0, 13);
+
+        $details['reference'] = $reference;
+        $details['order'] = ['orderId' => $reference];
         $details['amount'] = $payment->getTotalAmount();
         $details['currency'] = $payment->getCurrencyCode();
         $details['narrative_text'] = $payment->getDescription();
