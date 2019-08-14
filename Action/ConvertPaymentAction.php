@@ -36,14 +36,16 @@ class ConvertPaymentAction implements ActionInterface
 
         $reference = $payment->getNumber();
         $reference = str_replace('ORD-', '', $reference);
-        $reference = str_replace(['-'], ['_'], $reference);
         $reference = substr($reference, 0, 13);
+
+        $narrativeText = explode('_', $payment->getNumber());
+        $narrativeText = reset($narrativeText);
 
         $details['reference'] = $reference;
         $details['order'] = ['orderId' => $reference];
         $details['amount'] = $payment->getTotalAmount();
         $details['currency'] = $payment->getCurrencyCode();
-        $details['narrative_text'] = $payment->getDescription();
+        $details['narrative_text'] = $narrativeText;
 
         $request->setResult((array)$details);
     }
