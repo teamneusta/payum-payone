@@ -18,7 +18,7 @@
   ],
   "require": {
     "payum/core": "^1.5",
-    "arvatis/payone-php-api": "^2.2.3"
+    "dpfaffenbauer/payone-php-api": "^2.2.5"
   },
   "autoload": {
     "psr-4": {
