@@ -1,7 +1,7 @@
 {
   "name": "coreshop/payum-payone",
   "type": "library",
-  "description": "Heideplay for Payum",
+  "description": "Payone for Payum",
   "keywords": [
     "payment",
     "Payone",
