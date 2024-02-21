@@ -57,12 +57,6 @@ abstract class AbstractPurchaseAction implements ActionInterface, GenericTokenFa
             return;
         }
 
-        if ($model['param']) {
-            sleep(5);
-
-            throw new HttpRedirect($request->getToken()->getAfterUrl());
-        }
-
         $model['completed_status'] = $this->getCompletedStatus();
 
         // there might be a more beautiful way
@@ -75,7 +69,7 @@ abstract class AbstractPurchaseAction implements ActionInterface, GenericTokenFa
 
         $model['redirect'] = [
             'success' => $request->getToken()->getTargetUrl(),
-            'error' => $afterUrl. $seperatorChar .'canceled=1',
+            'error' => $afterUrl. $seperatorChar .'failed=1',
             'back' => $afterUrl . $seperatorChar .'canceled=1',
         ];
 
@@ -87,18 +81,13 @@ abstract class AbstractPurchaseAction implements ActionInterface, GenericTokenFa
             return;
         }
 
-        if (in_array($model['status'], ['canceled', 'failed', 'refunded'], true)) {
+        if (isset($httpRequest->query['failed'])) {
+            $model['status'] = 'failed';
+
             return;
         }
 
-//        if (PaymentTypes::PAYMENT_METHOD_DIRECT_DEBIT_SEPA === $model[Api::FIELD_PAYMENT_METHOD]) {
-//            $this->gateway->execute($mandate = new GetSepaMandate($model));
-//        }
-//        if (Api::PAYMENT_METHOD_CREDIT_CARD_PPAN === $model[Api::FIELD_PAYMENT_METHOD]) {
-//            $this->gateway->execute($ppan = new GetPseudoCardPan($model));
-//        }
-
-        if ($model['status'] === 'failed') {
+        if (in_array($model['status'], ['canceled', 'failed', 'refunded'], true)) {
             return;
         }
 
@@ -117,6 +106,12 @@ abstract class AbstractPurchaseAction implements ActionInterface, GenericTokenFa
 
         if (in_array($model['status'], ['authorized', 'captured', 'failed'], true)) {
             return;
+        }
+
+        if ($model['param']) {
+            sleep(5);
+
+            throw new HttpRedirect($request->getToken()->getAfterUrl());
         }
 
         // if notification is needed the payment will be completed in the NotifyAction

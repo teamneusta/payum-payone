@@ -25,7 +25,8 @@ class PayoneGatewayFactory extends GatewayFactory
         $config->defaults([
             'payum.factory_name' => 'Payone',
             'payum.factory_title' => 'Payone',
-            'payum.template.credit_card_payment' => '@PayumPayone/Action/credit_card_payment.html.twig',
+//            'payum.template.credit_card_payment' => '@PayumPayone/Action/credit_card_payment_form.html.twig',
+            'payum.template.credit_card_payment' => '@PayumPayone/Action/credit_card_payment_json.html.twig',
 
             'payum.action.authorize' => new Action\AuthorizeAction(),
             'payum.action.capture' => new Action\CaptureAction(),

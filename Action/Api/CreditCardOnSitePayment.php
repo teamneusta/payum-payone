@@ -56,7 +56,7 @@ class CreditCardOnSitePayment extends BaseApiAwareAction implements GatewayAware
 
         $model = ArrayObject::ensureArrayObject($request->getModel());
 
-        $model->validateNotEmpty(['language']);
+//        $model->validateNotEmpty(['language']);
 
         if (null !== $model->get('pseudocardpan', null)) {
             // we already have a pseudo card pan
@@ -65,15 +65,15 @@ class CreditCardOnSitePayment extends BaseApiAwareAction implements GatewayAware
 
         // process form submission if present
         $this->gateway->execute($httpRequest = new GetHttpRequest());
-        if ('POST' === $httpRequest->method) {
-            $postParams = [];
-            parse_str($httpRequest->content, $postParams);
-            if (array_key_exists('pseudocardpan', $postParams) && array_key_exists('truncatedcardpan', $postParams)) {
-                $model['pseudocardpan'] = $postParams['pseudocardpan'];
-                $model['truncatedcardpan'] = $postParams['truncatedcardpan'];
+        $postParams = $httpRequest->request;
+        if ('POST' === $httpRequest->method
+            && array_key_exists('pseudocardpan', $postParams)
+            && array_key_exists('truncatedcardpan', $postParams)
+        ) {
+            $model['pseudocardpan'] = $postParams['pseudocardpan'];
+            $model['truncatedcardpan'] = $postParams['truncatedcardpan'];
 
-                return;
-            }
+            return;
         }
 
         $language = strtolower($model['language']);
@@ -94,11 +94,35 @@ class CreditCardOnSitePayment extends BaseApiAwareAction implements GatewayAware
         ksort($params);
         $hash = hash('md5', implode('', $params) . $this->options['key']);
 
+        $requestObj = (object) $params;
+        $requestObj->hash = $hash;
+
         $this->gateway->execute($renderTemplate = new RenderTemplate($this->templateName, [
-            'params' => $params,
-            'hash' => $hash,
-            'language' => $language,
-            'actionUrl' => $request->getToken() ? $request->getToken()->getTargetUrl() : null,
+            'data' => [
+                'id' => -1,
+                'type' => 'credit-card',
+                'head' => [
+                    'script' => [
+                        ['src' => '//secure.pay1.de/client-api/js/v1/payone_hosted_min.js',]
+                    ]
+                ],
+                'elements' => [
+                    'payone' => [
+                        'cardtypes' => [
+                            'V',
+                            'M',
+                        ],
+                        'language' => $language,
+                        'request' => $requestObj,
+                        'actionUrl' => $request->getToken()?->getTargetUrl(),
+                    ]
+                ],
+                'marketing' => [],
+                'localePages' => [],
+                'messages' => [],
+                'contact' => [],
+                'tags' => [],
+            ]
         ]));
 
         throw new HttpResponse($renderTemplate->getResult());

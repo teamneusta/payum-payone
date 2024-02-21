@@ -72,8 +72,13 @@ class AuthorizeAction extends BaseApiAwareAction implements GatewayAwareInterfac
 
             return;
         }
-
-        throw new LogicException('Unknown status: '.$response->getStatus() . ' ' . $response->getErrorMessage());
+        $onsite = $this->api->isOnsite() ? 'true' : 'false';
+        $unsafeArray = $model->toUnsafeArray();
+        throw new LogicException(
+            'api onsite: ' . $onsite . PHP_EOL .
+            ' model reference: ' . $unsafeArray['reference'] . PHP_EOL .
+            ' Unknown status: '.$response->getStatus() . ' ' . $response->getErrorMessage()
+        );
     }
 
     /**

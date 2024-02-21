@@ -1,7 +1,7 @@
 {
-  "name": "coreshop/payum-payone",
+  "name": "teamneusta/payum-payone",
   "type": "library",
-  "description": "Payone for Payum",
+  "description": "Payone for Payum (forked from coreshop/payum-payone)",
   "keywords": [
     "payment",
     "Payone",
@@ -18,16 +18,17 @@
   ],
   "require": {
     "payum/core": "^1.5",
-    "dpfaffenbauer/payone-php-api": "^2.2.5"
+    "teamneusta/payone-php-api": "@dev"
   },
   "autoload": {
     "psr-4": {
       "CoreShop\\Payum\\Payone\\": ""
     }
   },
-  "extra": {
-    "branch-alias": {
-      "dev-master": "1.0-dev"
+  "repositories": {
+    "teamneusta/payone-php-api": {
+      "type": "vcs",
+      "url": "https://github.com/teamneusta/payone-php-api"
     }
   }
 }

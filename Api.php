@@ -122,6 +122,22 @@ class Api
             'portalid' => $this->getOption('portalId'),
             'key' => $this->getOption('key'),
             'mode' => $this->getOption('mode'),
+            'language' => 'en',
+        ];
+
+        $model['systemInfo'] = [
+            'vendor' => 'THE_VENDOR',
+            'version' => '1',
+            'module' => 'THE_MODULE',
+            'module_version' => '1',
+        ];
+
+        // required for bank transfer payments like SOFORT
+        $model['bankAccount'] = [
+            'country' => 'DE',
+            'holder' => 'Test GmbH',
+            'iban' => 'DE00123456782599100004',
+            'bic' => 'TESTTESX',
         ];
 
         return $model;

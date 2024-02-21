@@ -15,10 +15,14 @@ namespace CoreShop\Payum\Payone\Action;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
+use Payum\Core\GatewayAwareInterface;
+use Payum\Core\GatewayAwareTrait;
+use Payum\Core\Request\GetHttpRequest;
 use Payum\Core\Request\GetStatusInterface;
 
-class StatusAction implements ActionInterface
+class StatusAction implements ActionInterface, GatewayAwareInterface
 {
+    use GatewayAwareTrait;
     /**
      * {@inheritDoc}
      *
@@ -34,6 +38,16 @@ class StatusAction implements ActionInterface
             $request->markNew();
 
             return;
+        }
+        $httpRequest = new GetHttpRequest();
+        $this->gateway->execute($httpRequest);
+
+        if (isset($httpRequest->query['canceled'])) {
+            $model['status'] = 'canceled';
+        }
+
+        if (isset($httpRequest->query['failed'])) {
+            $model['status'] = 'failed';
         }
 
         if ($status = $model->get('status')) {

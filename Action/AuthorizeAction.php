@@ -13,7 +13,8 @@
 namespace CoreShop\Payum\Payone\Action;
 
 use CoreShop\Payum\Payone\Request\Api\PreAuthorize;
-use Payum\Core\Model\PaymentInterface;
+//@todo: use Payum\Core\Model\PaymentInterface here instead and override it within PayoneBundle
+use CoreShop\Component\Payment\Model\PaymentInterface;
 use Payum\Core\Request\Authorize;
 use Payum\Core\Request\Convert;
 use Payum\Core\Request\GetHumanStatus;

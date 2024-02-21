@@ -12,6 +12,8 @@
 
 namespace CoreShop\Payum\Payone\Action;
 
+use ArvPayoneApi\Response\ErrorCodes;
+use ArvPayoneApi\Response\PaymentStatus;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\LogicException;
@@ -58,6 +60,15 @@ class NotifyAction implements ActionInterface, GatewayAwareInterface
             throw new HttpResponse('TSOK', 200, ['Content-Type' => 'text/plain']);
         }
 
+        if ('failed' === $postParams['txaction']) {
+            $model['status'] = $this->getPaymentStatusForFailedTxActionByErrorCode((int)$postParams['errorcode']);
+            $model['txid'] = $postParams['txaction'];
+            $model['failedcause'] = $postParams['failedcause'];
+            $model['errorcode'] = $postParams['errorcode'];
+
+            throw new HttpResponse('TSOK', 200, ['Content-Type' => 'text/plain']);
+        }
+
         $transactionStatus = null;
         if (array_key_exists('transaction_status', $postParams)) {
             $transactionStatus = $postParams['transaction_status'];
@@ -88,5 +99,12 @@ class NotifyAction implements ActionInterface, GatewayAwareInterface
         return
             $request instanceof Notify &&
             $request->getModel() instanceof \ArrayAccess;
+    }
+
+    public function getPaymentStatusForFailedTxActionByErrorCode(int $errorCode): string
+    {
+        return (ErrorCodes::Operation_was_cancelled_by_the_user->value === $errorCode
+            ? PaymentStatus::Canceled->value
+            : PaymentStatus::Failed->value);
     }
 }
